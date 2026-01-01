@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Anukesh Kumar 99Store - Billing</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    h2 {
+        text-align: center;
+        font-weight: normal;
+        color: #555;
+        margin-top: 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    table, th, td {
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f0f0f0;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 6px;
+        box-sizing: border-box;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-add {
+        background-color: #4CAF50;
+        color: white;
+        margin-top: 10px;
+    }
+
+    .btn-remove {
+        background-color: #e74c3c;
+        color: white;
+    }
+
+    .summary {
+        margin-top: 20px;
+        text-align: right;
+    }
+
+    .summary input {
+        width: 120px;
+        text-align: right;
+    }
+
+    .print-btn {
+        background-color: #2196F3;
+        color: white;
+        margin-top: 15px;
+        float: right;
+    }
+
+    @media print {
+        .btn, .btn-add, .print-btn {
+            display: none;
+        }
+        body {
+            background: white;
+        }
+        .container {
+            box-shadow: none;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Anukesh Kumar 99Store</h1>
+    <h2>Billing Invoice</h2>
+
+    <table id="invoiceTable">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" placeholder="Product name"></td>
+                <td><input type="number" value="1" min="1" oninput="calculateTotal()"></td>
+                <td><input type="number" value="0" min="0" oninput="calculateTotal()"></td>
+                <td class="rowTotal">0</td>
+                <td><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="btn btn-add" onclick="addRow()">+ Add Product</button>
+
+    <div class="summary">
+        <p>
+            Sub Total: ₹ <span id="subTotal">0</span>
+        </p>
+        <p>
+            Discount (%):
+            <input type="number" id="discount" value="0" min="0" max="100" oninput="calculateTotal()">
+        </p>
+        <p>
+            <strong>Grand Total: ₹ <span id="grandTotal">0</span></strong>
+        </p>
+    </div>
+
+    <button class="btn print-btn" onclick="window.print()">Print Invoice</button>
+</div>
+
+<script>
+function addRow() {
+    const table = document.getElementById("invoiceTable").getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow();
+
+    newRow.innerHTML = `
+        <td><input type="text" placeholder="Product name"></td>
+        <td><input type="number" value="1" min="1" oninput="calculateTotal()"></td>
+        <td><input type="number" value="0" min="0" oninput="calculateTotal()"></td>
+        <td class="rowTotal">0</td>
+        <td><button class="btn btn-remove" onclick="removeRow(this)">X</button></td>
+    `;
+}
+
+function removeRow(button) {
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    calculateTotal();
+}
+
+function calculateTotal() {
+    const rows = document.querySelectorAll("#invoiceTable tbody tr");
+    let subTotal = 0;
+
+    rows.forEach(row => {
+        const qty = row.cells[1].querySelector("input").value;
+        const price = row.cells[2].querySelector("input").value;
+        const total = qty * price;
+        row.querySelector(".rowTotal").innerText = total.toFixed(2);
+        subTotal += total;
+    });
+
+    document.getElementById("subTotal").innerText = subTotal.toFixed(2);
+
+    const discount = document.getElementById("discount").value;
+    const discountAmount = subTotal * (discount / 100);
+    const grandTotal = subTotal - discountAmount;
+
+    document.getElementById("grandTotal").innerText = grandTotal.toFixed(2);
+}
+</script>
+
+</body>
+</html>
